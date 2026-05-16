@@ -10,59 +10,49 @@
 body{
     margin:0;
     padding:0;
-    background:linear-gradient(180deg,#edf7e8,#ffffff);
-    color:#222;
-
+    background:#ffffff;
+    color:#111;
     font-family:
     "Hiragino Mincho ProN",
     "Yu Mincho",
     "MS PMincho",
     serif;
-
     user-select:none;
-    -webkit-user-select:none;
-    -ms-user-select:none;
 }
 
 header{
-    background:#2f5e2f;
-    color:white;
-    padding:30px;
+    background:#1f3a1f;
+    color:#fff;
+    padding:25px;
     text-align:center;
 }
 
 header h1{
     margin:0;
-    font-size:2.2rem;
-}
-
-header p{
-    margin-top:10px;
+    font-size:2rem;
 }
 
 .container{
-    max-width:900px;
+    max-width:850px;
     margin:auto;
-    padding:25px;
+    padding:20px;
 }
 
 .card{
-    background:white;
-    border-radius:18px;
-    padding:25px;
-    margin-bottom:20px;
-    box-shadow:0 5px 18px rgba(0,0,0,0.08);
+    border:1px solid #ddd;
+    border-radius:10px;
+    padding:20px;
+    margin-bottom:15px;
 }
 
 button{
-    background:#2f5e2f;
-    color:white;
+    background:#1f3a1f;
+    color:#fff;
     border:none;
-    border-radius:10px;
-    padding:12px 18px;
+    padding:10px 15px;
     cursor:pointer;
     font-size:1rem;
-    margin-top:10px;
+    border-radius:6px;
 }
 
 button:hover{
@@ -73,12 +63,15 @@ button:hover{
     display:block;
     width:100%;
     text-align:left;
-    background:#edf5ea;
-    color:#222;
+    margin:8px 0;
+    padding:10px;
+    background:#f5f5f5;
+    border:1px solid #ddd;
+    cursor:pointer;
 }
 
 .choice:hover{
-    background:#dfeeda;
+    background:#eaeaea;
 }
 
 #quizArea,
@@ -90,24 +83,16 @@ button:hover{
     font-weight:bold;
 }
 
-.badge{
-    display:inline-block;
-    background:#dff0d8;
-    padding:10px 16px;
-    border-radius:999px;
-    margin-top:10px;
-    font-weight:bold;
-}
-
 .small{
     font-size:0.9rem;
-    color:#666;
+    color:#444;
 }
 
 footer{
     text-align:center;
-    padding:30px;
+    padding:20px;
     color:#666;
+    font-size:0.9rem;
 }
 
 </style>
@@ -121,85 +106,63 @@ onpaste="return false;"
 >
 
 <header>
-    <h1>昆虫新聞 昆虫知識検定</h1>
-    <p>昆虫に関する知識や理解度を確認できます。</p>
+    <h1>昆虫知識検定</h1>
 </header>
 
 <div class="container">
 
 <div class="card" id="startArea">
 
-    <h2>試験について</h2>
+    <h2>受験案内</h2>
 
     <p>
-        ・問題はランダムで出題されます<br>
-        ・制限時間があります<br>
-        ・検索や不正行為は禁止です<br>
-        ・本試験は知識向上を目的としています
+        ・全5問<br>
+        ・制限時間180秒<br>
+        ・外部検索は禁止<br>
+        ・不正行為は禁止
     </p>
 
-    <button onclick="startQuiz()">試験開始</button>
+    <button onclick="startQuiz()">開始</button>
 
 </div>
 
 <div class="card" id="quizArea">
 
-    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
-
+    <div style="display:flex;justify-content:space-between;">
         <div id="progress"></div>
-
-        <div id="timer">
-            残り時間: 180
-        </div>
-
+        <div id="timer">180</div>
     </div>
 
     <hr>
 
     <h2 id="question"></h2>
-
     <div id="choices"></div>
-
-    <div style="margin-top:20px;">
-
-        <button onclick="goBack()">
-            前の問題へ戻る
-        </button>
-
-    </div>
 
 </div>
 
 <div class="card" id="resultArea">
 
-    <h2>試験結果</h2>
+    <h2>結果</h2>
 
     <h1 id="scoreText"></h1>
 
-    <div class="badge" id="rankText"></div>
+    <p id="rankText"></p>
 
     <p id="commentText"></p>
 
     <hr>
 
-    <h3>認定証コード</h3>
-
-    <p class="small">
-        ※認定証確認や合格記録に使用できます
-    </p>
-
+    <h3>認定番号</h3>
     <p id="certificate"></p>
 
-    <button onclick="location.reload()">
-        トップへ戻る
-    </button>
+    <button onclick="location.reload()">終了</button>
 
 </div>
 
 </div>
 
 <footer>
-昆虫新聞 - Konchu Shinbun
+昆虫新聞
 </footer>
 
 <script>
@@ -207,33 +170,33 @@ onpaste="return false;"
 const questions = [
 
 {
-q:"ヤマトアオドウガネの属として正しいものは？",
-a:["Anomala","Popillia","Trypoxylus","Prosopocoilus"],
+q:"カブトムシが主に食べるものはどれか。",
+a:["樹液","草","花粉","水"],
 correct:0
 },
 
 {
-q:"コガネムシの活動が活発になりやすい時期は？",
-a:["真冬","梅雨〜夏","秋の終わり","雪の日"],
-correct:1
-},
-
-{
-q:"バッタ飼育で特に注意が必要なことは？",
-a:["湿気過多","完全乾燥","冷凍保存","砂糖水のみ"],
+q:"昆虫の体の構造はどれか。",
+a:["頭・胸・腹","頭・胴・脚","頭・腹・殻","胸・腹・羽"],
 correct:0
 },
 
 {
-q:"マメコガネの学名として正しいものは？",
-a:["Anomala daimiana","Popillia japonica","Allomyrina dichotoma","Oxya yezoensis"],
+q:"チョウの幼虫の名称はどれか。",
+a:["イモムシ","ミミズ","ヤゴ","サナギ"],
+correct:0
+},
+
+{
+q:"昆虫の脚の本数は何本か。",
+a:["4本","6本","8本","10本"],
 correct:1
 },
 
 {
-q:"昆虫館の展示として適切なのは？",
-a:["長期間掃除しない","生体に強い直射日光","安全と衛生を保つ","常に大音量"],
-correct:2
+q:"バッタが多く見られる時期はどれか。",
+a:["冬","春から秋","真冬","降雪時"],
+correct:1
 }
 
 ];
@@ -241,36 +204,35 @@ correct:2
 questions.sort(()=>Math.random()-0.5);
 
 let current = 0;
-let score = 0;
-let time = 180;
-let timer;
-
 let userAnswers = [];
+let endTime;
+let timer;
 
 function startQuiz(){
 
     document.getElementById("startArea").style.display="none";
     document.getElementById("quizArea").style.display="block";
+
     endTime = Date.now() + 180000;
-    
+
     showQuestion();
 
     timer = setInterval(()=>{
 
-    let remaining =
-    Math.max(
-        0,
-        Math.floor((endTime - Date.now()) / 1000)
-    );
+        let remaining = Math.max(
+            0,
+            Math.floor((endTime - Date.now()) / 1000)
+        );
 
-    document.getElementById("timer").innerText =
-    "残り時間: " + remaining;
+        document.getElementById("timer").innerText = remaining;
 
-    if(remaining <= 0){
-        finishQuiz();
-    }
+        if(remaining <= 0){
+            finishQuiz();
+        }
 
-},200);
+    },200);
+
+}
 
 function showQuestion(){
 
@@ -282,31 +244,23 @@ function showQuestion(){
     const q = questions[current];
 
     document.getElementById("progress").innerText =
-    `問題 ${current+1} / ${questions.length}`;
+    (current+1) + "/" + questions.length;
 
-    document.getElementById("question").innerText =
-    q.q;
+    document.getElementById("question").innerText = q.q;
 
-    const choices =
-    document.getElementById("choices");
-
+    const choices = document.getElementById("choices");
     choices.innerHTML = "";
 
-    q.a.forEach((choice,index)=>{
+    q.a.forEach((c,i)=>{
 
-        const btn =
-        document.createElement("button");
-
+        const btn = document.createElement("button");
         btn.className = "choice";
-
-        btn.innerText = choice;
+        btn.innerText = c;
 
         btn.onclick = ()=>{
 
-            userAnswers[current] = index;
-
+            userAnswers[current] = i;
             current++;
-
             showQuestion();
 
         };
@@ -317,66 +271,55 @@ function showQuestion(){
 
 }
 
-function goBack(){
-
-    if(current > 0){
-
-        current--;
-
-        showQuestion();
-
-    }
-
-}
-
 function finishQuiz(){
 
     clearInterval(timer);
 
-    score = 0;
+    let score = 0;
 
     for(let i=0;i<questions.length;i++){
-
         if(userAnswers[i] === questions[i].correct){
             score++;
         }
-
     }
 
+    const percent = Math.round((score/questions.length)*100);
+
     document.getElementById("quizArea").style.display="none";
-
     document.getElementById("resultArea").style.display="block";
-
-    const percent =
-    Math.round((score/questions.length)*100);
 
     document.getElementById("scoreText").innerText =
     percent + "点";
 
-    let rank = "見習い研究員";
-    let comment = "今後の知識向上に期待します。";
-
-    if(percent >= 80){
-        rank = "昆虫研究員";
-        comment = "高い昆虫知識が確認されました。";
-    }
+    let rank = "";
+    let comment = "";
 
     if(percent === 100){
-        rank = "特級昆虫研究員";
-        comment = "極めて高い昆虫知識が確認されました。";
+        rank = "1級";
+        comment = "全問正答。基準を満たしています。";
+    }
+    else if(percent >= 90){
+        rank = "2級";
+        comment = "上位水準です。";
+    }
+    else if(percent >= 70){
+        rank = "3級";
+        comment = "標準的な水準です。";
+    }
+    else if(percent >= 50){
+        rank = "4級";
+        comment = "基礎は一部理解されています。";
+    }
+    else{
+        rank = "5級";
+        comment = "基礎が不足しています。";
     }
 
-    document.getElementById("rankText").innerText =
-    rank;
-
-    document.getElementById("commentText").innerText =
-    comment;
-
-    const code =
-    "KS-" + Math.floor(Math.random()*999999);
+    document.getElementById("rankText").innerText = rank;
+    document.getElementById("commentText").innerText = comment;
 
     document.getElementById("certificate").innerText =
-    code;
+    "KS-" + Date.now();
 
 }
 

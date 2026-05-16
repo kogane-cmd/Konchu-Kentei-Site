@@ -7,10 +7,19 @@
 <style>
 body{
     margin:0;
-    font-family:"Hiragino Sans","Yu Gothic",sans-serif;
+    font-family:
+    "Hiragino Mincho ProN",
+    "YuMincho",
+    "Yu Mincho",
+    "MS PMincho",
+    "Times New Roman",
+    serif !important;
     background:linear-gradient(180deg,#dff5d8,#f7fff5);
     color:#1f2d1f;
     user-select:none;
+    -webkit-user-select:none;
+    -ms-user-select:none;
+    -webkit-touch-callout:none;
 }
 
 header{
@@ -118,11 +127,11 @@ footer{
 }
 </style>
 </head>
-<body oncontextmenu="return false;">
+<body oncontextmenu="return false;" oncopy="return false;" oncut="return false;" onpaste="return false;">
 
 <header>
     <h1>昆虫新聞 昆虫知識検定</h1>
-    <p>あなたの昆虫知識を試そう！</p>
+    <p>昆虫に関する知識や理解度を確認できます。</p>
 </header>
 
 <div class="container">
@@ -166,9 +175,10 @@ footer{
     <hr>
 
     <h3>認定証コード</h3>
+    <p class="small">※認定証確認や合格記録に使用できます</p>
     <p id="certificate"></p>
 
-    <button onclick="location.reload()">もう一度挑戦</button>
+    <button onclick="location.reload()">トップへ戻る</button>
 </div>
 
 </div>
@@ -273,16 +283,16 @@ function finishQuiz(){
     document.getElementById("scoreText").innerText = `${percent}点`;
 
     let rank = "見習い研究員";
-    let comment = "これからさらに昆虫知識を深めよう！";
+    let comment = "今後の知識向上に期待します。";
 
     if(percent >= 80){
         rank = "昆虫研究員";
-        comment = "素晴らしい知識量です！";
+        comment = "高い昆虫知識が確認されました。";
     }
 
     if(percent === 100){
         rank = "特級昆虫研究員";
-        comment = "館長級の知識です！";
+        comment = "極めて高い昆虫知識が確認されました。";
     }
 
     document.getElementById("rankText").innerText = rank;

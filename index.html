@@ -149,7 +149,7 @@ onpaste="return false;"
         <div id="progress"></div>
 
         <div id="timer">
-            残り時間: 300
+            残り時間: 180
         </div>
 
     </div>
@@ -242,7 +242,7 @@ questions.sort(()=>Math.random()-0.5);
 
 let current = 0;
 let score = 0;
-let time = 300;
+let time = 180;
 let timer;
 
 let userAnswers = [];
@@ -251,8 +251,6 @@ function startQuiz(){
 
     document.getElementById("startArea").style.display="none";
     document.getElementById("quizArea").style.display="block";
-
-    document.documentElement.requestFullscreen?.();
 
     showQuestion();
 

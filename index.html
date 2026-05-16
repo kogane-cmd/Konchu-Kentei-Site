@@ -70,8 +70,8 @@ button:hover{
 #topBar{
     display:flex;
     justify-content:space-between;
-    margin-bottom:10px;
     font-weight:bold;
+    margin-bottom:10px;
 }
 
 </style>
@@ -90,6 +90,12 @@ button:hover{
 
 <h2>受検級を選択</h2>
 
+<p>
+・制限時間180秒<br>
+・外部検索禁止<br>
+・不正行為禁止
+</p>
+
 <button onclick="startExam(5)">5級</button>
 <button onclick="startExam(4)">4級</button>
 <button onclick="startExam(3)">3級</button>
@@ -102,8 +108,8 @@ button:hover{
 <div class="card" id="quizArea">
 
 <div id="topBar">
-    <div id="progress"></div>
-    <div id="timer"></div>
+<div id="progress"></div>
+<div id="timer"></div>
 </div>
 
 <hr>
@@ -139,17 +145,17 @@ const questionBank = {
 5:[
 {q:"昆虫の足の本数は？",a:["4本","6本","8本","10本"],c:1},
 {q:"カブトムシの主な食べ物は？",a:["樹液","草","水","石"],c:0},
-{q:"昆虫の体の構造は？",a:["頭・胸・腹","頭・胴・脚","胸・腹・羽","頭・尻"],c:0},
+{q:"昆虫の体構造は？",a:["頭・胸・腹","頭・胴・脚","胸・腹・羽","頭・尻"],c:0},
 {q:"チョウの幼虫は？",a:["イモムシ","ミミズ","ヤゴ","カエル"],c:0},
 {q:"バッタが多い季節は？",a:["冬","春〜秋","真冬","雪"],c:1}
 ],
 
 4:[
 {q:"昆虫の羽は多くの場合何枚？",a:["2枚","4枚","6枚","8枚"],c:1},
-{q:"セミの幼虫の生活場所は？",a:["水中","土中","空中","木の上"],c:1},
+{q:"セミの幼虫の生活場所は？",a:["水中","土中","空中","花"],c:1},
 {q:"昆虫の呼吸器官は？",a:["肺","気門","腸","皮膚"],c:1},
-{q:"カマキリはどのような性質？",a:["草食","捕食性","水生","寄生"],c:1},
-{q:"昆虫はどの分類？",a:["節足動物","軟体動物","脊椎動物","環形動物"],c:0}
+{q:"カマキリの特徴は？",a:["草食","捕食性","水生","寄生"],c:1},
+{q:"昆虫の分類は？",a:["節足動物","軟体動物","脊椎動物","環形動物"],c:0}
 ]
 
 };
@@ -157,19 +163,25 @@ const questionBank = {
 let level = 5;
 let questions = [];
 let current = 0;
-let score = 0;
 let userAnswers = [];
 let endTime;
 let timer;
 
 function startExam(lv){
 
+console.log("startExam called:", lv); // デバッグ用
+
 level = lv;
 questions = [...questionBank[lv]];
+
+if(!questions || questions.length === 0){
+    alert("この級の問題が設定されていません");
+    return;
+}
+
 questions.sort(()=>Math.random()-0.5);
 
 current = 0;
-score = 0;
 userAnswers = [];
 
 document.getElementById("selectArea").style.display="none";
@@ -178,7 +190,6 @@ document.getElementById("quizArea").style.display="block";
 endTime = Date.now() + 180000;
 
 updateTimer();
-
 timer = setInterval(updateTimer,200);
 
 showQuestion();
@@ -251,16 +262,16 @@ clearInterval(timer);
 let correct = 0;
 
 for(let i=0;i<questions.length;i++){
-    if(userAnswers[i] === questions[i].c){
-        correct++;
-    }
+if(userAnswers[i] === questions[i].c){
+correct++;
 }
-
-let passLine = (level === 1) ? 5 : 3;
-let pass = correct >= passLine;
+}
 
 document.getElementById("quizArea").style.display="none";
 document.getElementById("resultArea").style.display="block";
+
+let passLine = (level === 1) ? 5 : 3;
+let pass = correct >= passLine;
 
 document.getElementById("resultText").innerText =
 pass ? "合格" : "不合格";
@@ -269,6 +280,7 @@ document.getElementById("detailText").innerText =
 "正答数: " + correct + "/" + questions.length;
 
 let used = Math.floor((180000 - (endTime - Date.now())) / 1000);
+
 document.getElementById("timeText").innerText =
 "経過時間: " + used + "秒";
 

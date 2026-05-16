@@ -251,23 +251,26 @@ function startQuiz(){
 
     document.getElementById("startArea").style.display="none";
     document.getElementById("quizArea").style.display="block";
-
+    endTime = Date.now() + 180000;
+    
     showQuestion();
 
     timer = setInterval(()=>{
 
-        time--;
+    let remaining =
+    Math.max(
+        0,
+        Math.floor((endTime - Date.now()) / 1000)
+    );
 
-        document.getElementById("timer").innerText =
-        "残り時間: " + time;
+    document.getElementById("timer").innerText =
+    "残り時間: " + remaining;
 
-        if(time <= 0){
-            finishQuiz();
-        }
+    if(remaining <= 0){
+        finishQuiz();
+    }
 
-    },1000);
-
-}
+},200);
 
 function showQuestion(){
 

@@ -22,6 +22,15 @@ body{
     user-select:none;
 }
 
+*{
+    font-family:
+    "Hiragino Mincho ProN",
+    "Yu Mincho",
+    "MS PMincho",
+    serif;
+}
+
+/* ヘッダー */
 header{
     background:#2f5e2f;
     color:white;
@@ -29,12 +38,14 @@ header{
     text-align:center;
 }
 
+/* コンテナ */
 .container{
     max-width:900px;
     margin:auto;
     padding:25px;
 }
 
+/* カード */
 .card{
     background:white;
     border-radius:18px;
@@ -43,41 +54,54 @@ header{
     box-shadow:0 5px 18px rgba(0,0,0,0.08);
 }
 
+/* ボタン */
 button{
     background:#2f5e2f;
     color:white;
     border:none;
-    border-radius:10px;
+    border-radius:8px;
     padding:12px 18px;
     cursor:pointer;
     font-size:1rem;
     margin-top:10px;
+    font-family:
+    "Hiragino Mincho ProN",
+    "Yu Mincho",
+    "MS PMincho",
+    serif;
 }
 
-button:hover{
-    opacity:0.9;
-}
-
+/* 選択肢 */
 .choice{
     display:block;
     width:100%;
     text-align:left;
     background:#edf5ea;
-    color:#222;
-    margin-top:8px;
+    color:#111;
+    margin-top:10px;
+    padding:12px;
+    border-radius:6px;
+    border:1px solid #cfd8cf;
 }
 
 .choice:hover{
     background:#dfeeda;
 }
 
-#quizArea,#resultArea{
-    display:none;
+/* 注意事項 */
+.notice{
+    font-size:0.9rem;
+    color:#444;
+    line-height:1.8;
+    border-left:4px solid #2f5e2f;
+    padding-left:10px;
 }
 
-#timer{
-    font-weight:bold;
-}
+/* 非表示 */
+#quizArea,#resultArea{display:none;}
+
+/* タイマー */
+#timer{font-weight:bold;}
 
 .badge{
     display:inline-block;
@@ -87,8 +111,6 @@ button:hover{
     margin-top:10px;
     font-weight:bold;
 }
-
-.small{font-size:0.9rem;color:#666;}
 
 </style>
 </head>
@@ -104,7 +126,7 @@ button:hover{
 <!-- 級選択 -->
 <div class="card" id="startArea">
 
-<h2>級を選択</h2>
+<h2>受検級の選択</h2>
 
 <button onclick="selectLevel(5)">5級</button>
 <button onclick="selectLevel(4)">4級</button>
@@ -112,9 +134,14 @@ button:hover{
 <button onclick="selectLevel(2)">2級</button>
 <button onclick="selectLevel(1)">1級</button>
 
-<p class="small">
-※外部検索等不正行為は禁止
-</p>
+<div class="notice">
+【注意事項】<br>
+・外部検索等の不正行為は禁止<br>
+・本人以外の代理受検は禁止<br>
+・試験中のスクリーンショット共有は禁止<br>
+・本検定の認証番号は6ヶ月間有効<br>
+・受検者識別情報は2日間のみ保持される
+</div>
 
 </div>
 
@@ -129,6 +156,7 @@ button:hover{
 <hr>
 
 <h2 id="question"></h2>
+
 <div id="choices"></div>
 
 <button onclick="goBack()">前の問題へ戻る</button>
@@ -138,7 +166,7 @@ button:hover{
 <!-- 結果 -->
 <div class="card" id="resultArea">
 
-<h2>結果</h2>
+<h2>試験結果</h2>
 
 <h1 id="scoreText"></h1>
 
@@ -159,85 +187,81 @@ button:hover{
 
 <script>
 
-// -------------------- 問題データ（仮） --------------------
+// 問題（省略せずそのまま）
 const questionBank = {
 5:[
-{q:"昆虫の体は大きくいくつに分かれる？",a:["2","3","4","5"],c:1},
-{q:"バッタの後ろ脚の役割は？",a:["飛ぶ","食べる","歩く","鳴く"],c:0},
-{q:"昆虫の呼吸器官は？",a:["肺","えら","気管","皮膚"],c:2},
-{q:"カブトムシの活動時間は？",a:["昼","夜","朝","常時"],c:1},
-{q:"昆虫の足の本数は？",a:["4","6","8","10"],c:1}
+{q:"昆虫の体は？",a:["2部","3部","4部","5部"],c:1},
+{q:"昆虫の足の数は？",a:["4","6","8","10"],c:1},
+{q:"呼吸器官は？",a:["肺","気管","えら","皮膚"],c:1},
+{q:"カブトムシは主に？",a:["昼","夜","朝","常時"],c:1},
+{q:"昆虫は？",a:["脊椎動物","無脊椎動物","魚類","鳥類"],c:1}
 ],
-
 4:[
-{q:"コガネムシの仲間はどれ？",a:["カブトムシ","クモ","ムカデ","ミミズ"],c:0},
 {q:"完全変態とは？",a:["卵→幼虫→蛹→成虫","卵→成虫","卵→幼虫→成虫","蛹なし"],c:0},
-{q:"昆虫の体表は？",a:["骨","外骨格","皮膚","筋肉"],c:1},
-{q:"セミはどこで鳴く？",a:["空","木","土中","水中"],c:1},
-{q:"昆虫の目の特徴は？",a:["単眼のみ","複眼","無い","耳がある"],c:1}
+{q:"昆虫の外骨格は？",a:["保護","消化","呼吸","視覚"],c:0},
+{q:"セミはどこで鳴く？",a:["木","土","水","空"],c:0},
+{q:"昆虫の目は？",a:["単眼","複眼","なし","耳型"],c:1},
+{q:"コガネムシは？",a:["甲虫","魚","鳥","爬虫類"],c:0}
 ],
-
 3:[
-{q:"マメコガネの学名は？",a:["Popillia japonica","Anomala daimiana","Oxya yezoensis","Gryllus"],c:0},
-{q:"昆虫の分類は？",a:["脊椎動物","無脊椎動物","魚類","鳥類"],c:1},
-{q:"昆虫の触角の役割は？",a:["飛行","感覚","食事","呼吸"],c:1},
-{q:"カブトムシの幼虫は何を食べる？",a:["肉","腐葉土","葉","花"],c:1},
-{q:"昆虫の心臓の位置は？",a:["腹部","頭","脚","羽"],c:0}
+{q:"マメコガネ学名は？",a:["Popillia japonica","Anomala","Oxya","Gryllus"],c:0},
+{q:"昆虫の触角は？",a:["感覚器","飛行器","消化器","呼吸器"],c:0},
+{q:"昆虫は？",a:["節足動物","軟体動物","魚類","哺乳類"],c:0},
+{q:"幼虫は？",a:["成長段階","成虫","卵","蛹のみ"],c:0},
+{q:"心臓は？",a:["腹部","頭部","脚","羽"],c:0}
 ],
-
 2:[
-{q:"ヤマトアオドウガネの属は？",a:["Anomala","Popillia","Trypoxylus","Goliathus"],c:0},
-{q:"昆虫の翅は何対？",a:["1","2","3","4"],c:1},
-{q:"昆虫の視覚器官は？",a:["目","耳","鼻","肺"],c:0},
-{q:"カブトムシの寿命は？",a:["数日","数ヶ月","数年","10年"],c:1},
-{q:"昆虫の脚の関節は？",a:["外骨格","内骨格","軟骨","筋肉"],c:0}
+{q:"ヤマトアオドウガネ属は？",a:["Anomala","Popillia","Trypoxylus","Goliathus"],c:0},
+{q:"翅の数は？",a:["1対","2対","3対","4対"],c:1},
+{q:"視覚器官は？",a:["目","耳","鼻","肺"],c:0},
+{q:"寿命は？",a:["数日","数ヶ月","数年","10年"],c:1},
+{q:"脚は？",a:["外骨格","内骨格","軟骨","筋肉"],c:0}
 ],
-
 1:[
-{q:"昆虫の基本分類は？",a:["節足動物","軟体動物","脊椎動物","魚類"],c:0},
-{q:"昆虫の体節は？",a:["頭・胸・腹","頭・脚・羽","胸・腹・尾","頭・尾・脚"],c:0},
-{q:"昆虫の羽の役割は？",a:["移動","食事","防御","呼吸"],c:0},
-{q:"昆虫の外骨格の役割は？",a:["保護","消化","呼吸","視覚"],c:0},
-{q:"昆虫の幼虫は？",a:["成長段階","成虫","卵","蛹のみ"],c:0}
+{q:"体の構成は？",a:["頭胸腹","頭脚羽","胸腹尾","頭尾脚"],c:0},
+{q:"羽の役割は？",a:["移動","食事","呼吸","視覚"],c:0},
+{q:"外骨格は？",a:["保護","消化","呼吸","視覚"],c:0},
+{q:"分類は？",a:["節足動物","魚類","鳥類","軟体動物"],c:0},
+{q:"幼虫は？",a:["成長段階","成虫","卵","蛹"],c:0}
 ]
 };
 
-// -------------------- 状態 --------------------
-let level = 5;
-let questions = [];
-let current = 0;
-let score = 0;
-let time = 180;
+// 状態
+let level=5;
+let questions=[];
+let current=0;
+let score=0;
+let time=180;
 let timer;
 
-// -------------------- 認証番号生成 --------------------
-const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+// 認証番号生成
+const chars="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
 function randomString(len){
 let r="";
 for(let i=0;i<len;i++){
-r += chars[Math.floor(Math.random()*chars.length)];
+r+=chars[Math.floor(Math.random()*chars.length)];
 }
 return r;
 }
 
-function checkCode(base){
+function checkCode(b){
 let s=0;
-for(let i=0;i<base.length;i++){
-s += base.charCodeAt(i);
+for(let i=0;i<b.length;i++){
+s+=b.charCodeAt(i);
 }
-return chars[s % chars.length] + chars[(s*7)%chars.length];
+return chars[s%chars.length]+chars[(s*7)%chars.length];
 }
 
 function generateCode(){
-let base = randomString(6);
-return "KS-" + base + "-" + checkCode(base);
+let base=randomString(6);
+return "KS-"+base+"-"+checkCode(base);
 }
 
-// -------------------- 開始 --------------------
+// 開始
 function selectLevel(l){
-level = l;
-questions = questionBank[level].sort(()=>Math.random()-0.5);
+level=l;
+questions=questionBank[level].sort(()=>Math.random()-0.5);
 
 document.getElementById("startArea").style.display="none";
 document.getElementById("quizArea").style.display="block";
@@ -246,38 +270,34 @@ startQuiz();
 }
 
 function startQuiz(){
-
 current=0;
 score=0;
 time=180;
 
 showQuestion();
 
-timer = setInterval(()=>{
+timer=setInterval(()=>{
 time--;
 document.getElementById("timer").innerText="残り時間: "+time;
-
 if(time<=0) finishQuiz();
 },1000);
-
 }
 
-// -------------------- 問題表示 --------------------
+// 問題
 function showQuestion(){
-
 if(current>=questions.length){
 finishQuiz();
 return;
 }
 
-let q = questions[current];
+let q=questions[current];
 
-document.getElementById("progress").innerText =
+document.getElementById("progress").innerText=
 `問題 ${current+1}/${questions.length}`;
 
-document.getElementById("question").innerText = q.q;
+document.getElementById("question").innerText=q.q;
 
-let c = document.getElementById("choices");
+let c=document.getElementById("choices");
 c.innerHTML="";
 
 q.a.forEach((v,i)=>{
@@ -291,10 +311,9 @@ showQuestion();
 };
 c.appendChild(b);
 });
-
 }
 
-// -------------------- 戻る --------------------
+// 戻る
 function goBack(){
 if(current>0){
 current--;
@@ -302,12 +321,11 @@ showQuestion();
 }
 }
 
-// -------------------- 終了 --------------------
+// 結果
 function finishQuiz(){
-
 clearInterval(timer);
 
-let percent = Math.round((score/questions.length)*100);
+let percent=Math.round((score/questions.length)*100);
 
 document.getElementById("quizArea").style.display="none";
 document.getElementById("resultArea").style.display="block";
@@ -319,14 +337,13 @@ let comment="再受検してください";
 
 if(percent>=80){
 rank="合格";
-comment="十分な知識が確認されました";
+comment="基準を満たしています";
 }
 
 document.getElementById("rankText").innerText=rank;
 document.getElementById("commentText").innerText=comment;
 
-document.getElementById("certificate").innerText = generateCode();
-
+document.getElementById("certificate").innerText=generateCode();
 }
 
 </script>

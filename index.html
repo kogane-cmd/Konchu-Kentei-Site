@@ -6,17 +6,11 @@
 <title>昆虫新聞 昆虫知識検定</title>
 
 <style>
-
 body{
     margin:0;
     background:linear-gradient(180deg,#edf7e8,#ffffff);
     font-family:"Hiragino Mincho ProN","Yu Mincho","MS PMincho",serif;
     color:#222;
-    user-select:none;
-}
-
-*{
-    font-family:"Hiragino Mincho ProN","Yu Mincho","MS PMincho",serif;
 }
 
 header{
@@ -35,7 +29,7 @@ header{
 .card{
     background:white;
     padding:25px;
-    border-radius:18px;
+    border-radius:16px;
     box-shadow:0 5px 18px rgba(0,0,0,0.08);
     margin-bottom:20px;
 }
@@ -58,11 +52,6 @@ button{
     border:1px solid #cfd8cf;
     border-radius:6px;
     text-align:left;
-    color:#222;
-}
-
-.choice:hover{
-    background:#e3efdf;
 }
 
 #quizArea,#resultArea{display:none;}
@@ -73,11 +62,6 @@ button{
     padding-left:10px;
     line-height:1.8;
 }
-
-#timer{
-    font-weight:bold;
-}
-
 </style>
 </head>
 
@@ -89,169 +73,80 @@ button{
 
 <div class="container">
 
-<!-- 級選択 -->
 <div class="card" id="startArea">
+<h2>受検開始</h2>
 
-<h2>受検級選択</h2>
-
-<button onclick="start(5)">5級</button>
-<button onclick="start(4)">4級</button>
-<button onclick="start(3)">3級</button>
-<button onclick="start(2)">2級</button>
-<button onclick="start(1)">1級</button>
+<button onclick="start()">開始</button>
 
 <div class="notice">
-【受検規定】<br>
-・外部検索や認証番号の譲渡共有など不正行為は禁止<br>
-・試験内容の転載は禁止<br>
-・合格資格の有効期間は6ヶ月
+・外部検索禁止<br>
+・不正共有禁止<br>
+・資格有効期間6ヶ月
+</div>
 </div>
 
-</div>
-
-<!-- 問題 -->
 <div class="card" id="quizArea">
-
-<div style="display:flex;justify-content:space-between;">
 <div id="progress"></div>
-<div id="timer"></div>
-</div>
-
-<hr>
-
 <h2 id="q"></h2>
 <div id="choices"></div>
-
 <button onclick="back()">戻る</button>
-
 </div>
 
-<!-- 結果 -->
 <div class="card" id="resultArea">
-
-<h2>試験結果</h2>
-
+<h2>結果</h2>
 <h1 id="score"></h1>
-
 <div id="rank"></div>
 <p id="comment"></p>
-
-<hr>
-
-<h3>認証番号</h3>
 <p id="code"></p>
-
 </div>
 
 </div>
 
 <script>
 
-/* 問題データ（全て？削除済み正式文） */
-const bank = {
-5:[
-{q:"昆虫の足の本数は",a:["4本","6本","8本","10本"],c:1},
-{q:"昆虫の呼吸器官は",a:["肺","気管","えら","皮膚"],c:1},
-{q:"昆虫の体の構造は",a:["頭部胸部腹部","頭部腹部","胸部腹部","頭部のみ"],c:0},
-{q:"昆虫の外骨格の主成分は",a:["キチン","セルロース","脂肪","カルシウム"],c:0},
-{q:"昆虫は分類上どれに属するか",a:["節足動物","軟体動物","脊椎動物","環形動物"],c:0}
-],
-4:[
-{q:"完全変態の順序は",a:["卵幼虫蛹成虫","卵成虫","幼虫成虫蛹","卵蛹成虫"],c:0},
-{q:"昆虫の外骨格の役割は",a:["保護","消化","呼吸","運動停止"],c:0},
-{q:"昆虫の翅がある位置は",a:["胸部","頭部","腹部","脚"],c:0},
-{q:"昆虫の心臓の位置は",a:["背側","腹側","頭部","脚"],c:0},
-{q:"昆虫の目の種類は",a:["複眼","単眼のみ","虹彩","網膜"],c:0}
-],
-3:[
-{q:"マメコガネの学名は",a:["Popillia japonica","Anomala albopilosa","Gryllus bimaculatus","Oxya yezoensis"],c:0},
-{q:"昆虫の血液の色は",a:["無色から緑系","赤","青","黒"],c:0},
-{q:"昆虫の神経系は",a:["腹側神経索","背側神経索","脊髄","神経なし"],c:0},
-{q:"昆虫の翅の枚数は基本",a:["二対","一対","三対","四対"],c:0},
-{q:"昆虫の成長方法は",a:["脱皮","発芽","分裂","光合成"],c:0}
-],
-2:[
-{q:"ヤマトアオドウガネの属は",a:["Anomala","Popillia","Trypoxylus","Goliathus"],c:0},
-{q:"コガネムシの活動時期は",a:["夏","冬","春のみ","秋のみ"],c:0},
-{q:"昆虫の感覚器でないものは",a:["肺","触角","複眼","感覚毛"],c:0},
-{q:"昆虫の脚の付け根は",a:["基節","胸節","腹節","頭節"],c:0},
-{q:"昆虫に含まれないものは",a:["蛹","卵","幼虫","種子"],c:3}
-],
-1:[
-{q:"昆虫の分類は",a:["節足動物","魚類","鳥類","哺乳類"],c:0},
-{q:"昆虫の体構造は",a:["頭部胸部腹部","頭部のみ","胴体のみ","頭脚腹"],c:0},
-{q:"昆虫の足の本数は",a:["六本","四本","八本","十本"],c:0},
-{q:"昆虫に骨はあるか",a:["ない外骨格","ある","一部ある","種類による"],c:0},
-{q:"昆虫の目は",a:["複眼","単眼のみ","なし","耳"],c:0}
-]
-};
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxxm4xXdd_mLEATiIC4PgxM_NHwNQCB7Cjef0NYbsukulVUaZQMgqLLObemseIh/exec";
 
-/* 状態 */
-let level=5;
-let list=[];
+const questions = [
+{q:"昆虫の足の本数",a:["6本","4本","8本","10本"],c:0},
+{q:"昆虫の体構造",a:["頭胸腹","頭のみ","胴体のみ","頭脚腹"],c:0},
+{q:"外骨格の主成分",a:["キチン","カルシウム","タンパク質","糖"],c:0},
+{q:"昆虫の分類",a:["節足動物","魚類","鳥類","爬虫類"],c:0},
+{q:"昆虫の呼吸",a:["気管","肺","えら","皮膚"],c:0}
+];
+
 let i=0;
 let score=0;
+let answers=[];
 
-/* タイマー */
-let endTime;
+let startTime;
 
-/* GAS */
-const GAS_URL="https://script.google.com/macros/s/AKfycbxxm4xXdd_mLEATiIC4PgxM_NHwNQCB7Cjef0NYbsukulVUaZQMgqLLObemseIh/exec";
-
-/* 認証番号 */
-function makeCode(){
-const c="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-let r="";
-for(let i=0;i<6;i++){
-r+=c[Math.floor(Math.random()*c.length)];
-}
-return "KS-"+r;
-}
-
-/* 開始 */
-function start(l){
-level=l;
-list=bank[level].sort(()=>Math.random()-0.5);
-
-i=0;
-score=0;
-
+function start(){
 document.getElementById("startArea").style.display="none";
 document.getElementById("quizArea").style.display="block";
-
-endTime=Date.now()+180000;
-
+startTime=Date.now();
 show();
-
-setInterval(()=>{
-let remain=Math.max(0,Math.floor((endTime-Date.now())/1000));
-document.getElementById("timer").innerText=remain;
-if(remain<=0)finish();
-},200);
 }
 
-/* 問題 */
 function show(){
 
-if(i>=list.length){
+if(i>=questions.length){
 finish();
 return;
 }
 
-let q=list[i];
-
-document.getElementById("progress").innerText=(i+1)+"/"+list.length;
+const q=questions[i];
+document.getElementById("progress").innerText=(i+1)+"/"+questions.length;
 document.getElementById("q").innerText=q.q;
 
-let c=document.getElementById("choices");
+const c=document.getElementById("choices");
 c.innerHTML="";
 
 q.a.forEach((v,idx)=>{
-let b=document.createElement("button");
+const b=document.createElement("button");
 b.className="choice";
 b.innerText=v;
 b.onclick=()=>{
-if(idx===q.c)score++;
+answers[i]=idx;
 i++;
 show();
 };
@@ -259,7 +154,6 @@ c.appendChild(b);
 });
 }
 
-/* 戻る */
 function back(){
 if(i>0){
 i--;
@@ -267,41 +161,38 @@ show();
 }
 }
 
-/* 終了 */
 function finish(){
+
+for(let j=0;j<questions.length;j++){
+if(answers[j]===questions[j].c)score++;
+}
+
+let percent=Math.round(score/questions.length*100);
+
+let rank="不合格";
+if(percent>=80)rank="合格";
 
 document.getElementById("quizArea").style.display="none";
 document.getElementById("resultArea").style.display="block";
 
-let p=Math.round(score/list.length*100);
+document.getElementById("score").innerText=percent+"点";
+document.getElementById("rank").innerText=rank;
 
-let r="不合格";
-let m="再受検してください";
-
-if(p>=80){
-r="合格";
-m="基準達成";
-}
-
-document.getElementById("score").innerText=p+"点";
-document.getElementById("rank").innerText=r;
-document.getElementById("comment").innerText=m;
-
-let code=makeCode();
+let code="KS-"+Math.random().toString(36).substring(2,8).toUpperCase();
 document.getElementById("code").innerText=code;
 
-/* GAS送信 */
+/* ★重要：GAS送信（NO POST DATA対策済み） */
 fetch(GAS_URL,{
 method:"POST",
-headers:{"Content-Type":"application/json"},
 body:JSON.stringify({
 code:code,
-level:level,
-score:p,
-result:r,
+level:1,
+score:percent,
+result:rank,
 date:new Date().toISOString()
 })
 });
+
 }
 
 </script>

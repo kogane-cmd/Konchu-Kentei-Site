@@ -8,16 +8,27 @@
 <style>
 body{
     margin:0;
+    padding:0;
     background:linear-gradient(180deg,#edf7e8,#ffffff);
-    font-family:"Hiragino Mincho ProN","Yu Mincho","MS PMincho",serif;
     color:#222;
+
+    font-family:"Hiragino Mincho ProN","Yu Mincho","MS PMincho",serif;
 }
 
 header{
     background:#2f5e2f;
     color:white;
-    text-align:center;
     padding:30px;
+    text-align:center;
+}
+
+header h1{
+    margin:0;
+    font-size:2.2rem;
+}
+
+header p{
+    margin-top:10px;
 }
 
 .container{
@@ -28,39 +39,51 @@ header{
 
 .card{
     background:white;
+    border-radius:18px;
     padding:25px;
-    border-radius:16px;
-    box-shadow:0 5px 18px rgba(0,0,0,0.08);
     margin-bottom:20px;
+    box-shadow:0 5px 18px rgba(0,0,0,0.08);
 }
 
 button{
     background:#2f5e2f;
     color:white;
     border:none;
+    border-radius:10px;
     padding:12px 18px;
-    border-radius:8px;
     cursor:pointer;
+    font-size:1rem;
+    margin-top:10px;
+}
+
+button:hover{
+    opacity:0.9;
 }
 
 .choice{
     display:block;
     width:100%;
-    margin-top:10px;
-    padding:12px;
-    background:#f4f8f2;
-    border:1px solid #cfd8cf;
-    border-radius:6px;
     text-align:left;
+    background:#edf5ea;
+    color:#222;
+    margin-top:8px;
+}
+
+.choice:hover{
+    background:#dfeeda;
 }
 
 #quizArea,#resultArea{display:none;}
 
+#timer{
+    font-weight:bold;
+}
+
 .notice{
     font-size:0.9rem;
-    border-left:4px solid #2f5e2f;
-    padding-left:10px;
+    color:#666;
     line-height:1.8;
+    margin-top:10px;
 }
 </style>
 </head>
@@ -69,74 +92,157 @@ button{
 
 <header>
 <h1>昆虫新聞 昆虫知識検定</h1>
+<p>昆虫に関する知識や理解度を確認できます。</p>
 </header>
 
 <div class="container">
 
+<!-- 級選択 -->
 <div class="card" id="startArea">
-<h2>受検開始</h2>
 
-<button onclick="start()">開始</button>
+<h2>試験について</h2>
+
+<button onclick="startQuiz(5)">5級</button>
+<button onclick="startQuiz(4)">4級</button>
+<button onclick="startQuiz(3)">3級</button>
+<button onclick="startQuiz(2)">2級</button>
+<button onclick="startQuiz(1)">1級</button>
 
 <div class="notice">
-・外部検索禁止<br>
-・不正共有禁止<br>
-・資格有効期間6ヶ月
-</div>
+・問題はランダムで出題されます<br>
+・制限時間あり（180秒）<br>
+・外部検索や不正行為は禁止<br>
+・本人以外の代理受検は禁止<br>
+・合格資格の有効期間は6ヶ月
 </div>
 
+</div>
+
+<!-- 問題 -->
 <div class="card" id="quizArea">
+
+<div style="display:flex;justify-content:space-between;">
 <div id="progress"></div>
-<h2 id="q"></h2>
-<div id="choices"></div>
-<button onclick="back()">戻る</button>
+<div id="timer">180</div>
 </div>
 
+<hr>
+
+<h2 id="question"></h2>
+<div id="choices"></div>
+
+<button onclick="goBack()">戻る</button>
+
+</div>
+
+<!-- 結果 -->
 <div class="card" id="resultArea">
-<h2>結果</h2>
-<h1 id="score"></h1>
-<div id="rank"></div>
-<p id="comment"></p>
-<p id="code"></p>
+
+<h2>試験結果</h2>
+
+<h1 id="scoreText"></h1>
+
+<div id="rankText"></div>
+
+<p id="commentText"></p>
+
+<hr>
+
+<h3>認証コード</h3>
+<p id="certificate"></p>
+
 </div>
 
 </div>
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbxxm4xXdd_mLEATiIC4PgxM_NHwNQCB7Cjef0NYbsukulVUaZQMgqLLObemseIh/exec";
+const GAS_URL="https://script.google.com/macros/s/AKfycbxxm4xXdd_mLEATiIC4PgxM_NHwNQCB7Cjef0NYbsukulVUaZQMgqLLObemseIh/exec";
 
-const questions = [
-{q:"昆虫の足の本数",a:["6本","4本","8本","10本"],c:0},
-{q:"昆虫の体構造",a:["頭胸腹","頭のみ","胴体のみ","頭脚腹"],c:0},
-{q:"外骨格の主成分",a:["キチン","カルシウム","タンパク質","糖"],c:0},
-{q:"昆虫の分類",a:["節足動物","魚類","鳥類","爬虫類"],c:0},
-{q:"昆虫の呼吸",a:["気管","肺","えら","皮膚"],c:0}
-];
+/* 問題（級別・完全維持） */
+const questions={
+5:[
+{q:"昆虫の足の本数は",a:["6本","4本","8本","10本"],c:0},
+{q:"昆虫の体の構造は",a:["頭胸腹","頭腹","胸腹","頭のみ"],c:0},
+{q:"昆虫の外骨格の主成分は",a:["キチン","カルシウム","鉄","脂質"],c:0},
+{q:"昆虫は分類上どれか",a:["節足動物","軟体動物","脊椎動物","環形動物"],c:0},
+{q:"昆虫の呼吸方法は",a:["気管","肺","えら","皮膚呼吸"],c:0}
+],
+4:[
+{q:"完全変態の順序は",a:["卵幼虫蛹成虫","卵成虫","幼虫成虫蛹","卵蛹幼虫成虫"],c:0},
+{q:"昆虫の翅の位置は",a:["胸部","頭部","腹部","脚"],c:0},
+{q:"昆虫の心臓の位置は",a:["背側","腹側","頭部","脚"],c:0},
+{q:"昆虫の目は",a:["複眼","単眼のみ","虹彩","網膜"],c:0},
+{q:"昆虫の体液の役割は",a:["栄養運搬","骨形成","呼吸","光合成"],c:0}
+],
+3:[
+{q:"マメコガネの学名は",a:["Popillia japonica","Anomala albopilosa","Gryllus bimaculatus","Oxya yezoensis"],c:0},
+{q:"昆虫の血液の色は",a:["無色〜緑系","赤","青","黒"],c:0},
+{q:"昆虫の神経系は",a:["腹側神経索","背側神経索","脊髄","神経なし"],c:0},
+{q:"昆虫の翅は基本何対か",a:["二対","一対","三対","四対"],c:0},
+{q:"昆虫の成長は",a:["脱皮","分裂","発芽","光合成"],c:0}
+],
+2:[
+{q:"ヤマトアオドウガネの属は",a:["Anomala","Popillia","Trypoxylus","Goliathus"],c:0},
+{q:"コガネムシの活動時期は",a:["夏","冬","秋","春"],c:0},
+{q:"昆虫に含まれないものは",a:["種子","蛹","幼虫","卵"],c:0},
+{q:"昆虫の脚の付け根は",a:["基節","胸節","腹節","頭節"],c:0},
+{q:"昆虫の感覚器でないものは",a:["肺","触角","複眼","感覚毛"],c:0}
+],
+1:[
+{q:"昆虫の分類は",a:["節足動物","魚類","鳥類","哺乳類"],c:0},
+{q:"昆虫の足の本数は",a:["6本","4本","8本","10本"],c:0},
+{q:"昆虫の体構造は",a:["頭胸腹","頭のみ","胴体のみ","頭脚腹"],c:0},
+{q:"昆虫に骨はあるか",a:["ない外骨格","ある","一部ある","種類による"],c:0},
+{q:"昆虫の目は",a:["複眼","単眼のみ","なし","耳"],c:0}
+]
+};
 
+let level=5;
+let list=[];
 let i=0;
 let score=0;
 let answers=[];
+let timer;
+let endTime;
 
-let startTime;
+/* 開始 */
+function startQuiz(l){
+level=l;
+list=questions[level].sort(()=>Math.random()-0.5);
+i=0;
+score=0;
+answers=[];
 
-function start(){
 document.getElementById("startArea").style.display="none";
 document.getElementById("quizArea").style.display="block";
-startTime=Date.now();
+
+endTime=Date.now()+180000;
+
+timer=setInterval(()=>{
+let remain=Math.max(0,Math.floor((endTime-Date.now())/1000));
+document.getElementById("timer").innerText=remain;
+
+if(remain<=0){
+finish();
+}
+},200);
+
 show();
 }
 
+/* 表示 */
 function show(){
 
-if(i>=questions.length){
+if(i>=list.length){
 finish();
 return;
 }
 
-const q=questions[i];
-document.getElementById("progress").innerText=(i+1)+"/"+questions.length;
-document.getElementById("q").innerText=q.q;
+const q=list[i];
+
+document.getElementById("progress").innerText=(i+1)+"/"+list.length;
+document.getElementById("question").innerText=q.q;
 
 const c=document.getElementById("choices");
 c.innerHTML="";
@@ -154,39 +260,49 @@ c.appendChild(b);
 });
 }
 
-function back(){
+/* 戻る */
+function goBack(){
 if(i>0){
 i--;
 show();
 }
 }
 
+/* 終了 */
 function finish(){
 
-for(let j=0;j<questions.length;j++){
-if(answers[j]===questions[j].c)score++;
+clearInterval(timer);
+
+for(let j=0;j<list.length;j++){
+if(answers[j]===list[j].c)score++;
 }
 
-let percent=Math.round(score/questions.length*100);
+let percent=Math.round(score/list.length*100);
 
 let rank="不合格";
-if(percent>=80)rank="合格";
+let comment="再受検してください";
+
+if(percent>=80){
+rank="合格";
+comment="基準を満たしています";
+}
 
 document.getElementById("quizArea").style.display="none";
 document.getElementById("resultArea").style.display="block";
 
-document.getElementById("score").innerText=percent+"点";
-document.getElementById("rank").innerText=rank;
+document.getElementById("scoreText").innerText=percent+"点";
+document.getElementById("rankText").innerText=rank;
+document.getElementById("commentText").innerText=comment;
 
 let code="KS-"+Math.random().toString(36).substring(2,8).toUpperCase();
-document.getElementById("code").innerText=code;
+document.getElementById("certificate").innerText=code;
 
-/* ★重要：GAS送信（NO POST DATA対策済み） */
+/* ★GAS送信（安定版） */
 fetch(GAS_URL,{
 method:"POST",
 body:JSON.stringify({
 code:code,
-level:1,
+level:level,
 score:percent,
 result:rank,
 date:new Date().toISOString()

@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>昆虫新聞社 昆虫知識検定</title>
+<title>昆虫新聞 昆虫知識検定</title>
 
 <style>
 
-/* ★全体強制 明朝体 */
+/* ★全体フォント固定（絶対維持） */
 *{
     font-family:"Hiragino Mincho ProN","Yu Mincho","MS PMincho",serif !important;
 }
@@ -28,6 +28,7 @@ header{
 
 header h1{
     margin:0;
+    font-size:2rem;
 }
 
 /* コンテナ */
@@ -42,11 +43,11 @@ header h1{
     background:white;
     padding:25px;
     border-radius:16px;
+    margin-bottom:20px;
     box-shadow:0 4px 16px rgba(0,0,0,0.08);
-    margin-bottom:18px;
 }
 
-/* ボタン統一 */
+/* ボタン（共通） */
 button{
     background:#2f5e2f;
     color:white;
@@ -54,8 +55,8 @@ button{
     padding:12px 16px;
     border-radius:10px;
     cursor:pointer;
-    margin-top:10px;
     font-size:15px;
+    margin-top:10px;
 }
 
 /* 選択肢ボタン */
@@ -70,13 +71,11 @@ button{
 }
 
 .choice:hover{
-    background:#e3efe0;
+    background:#e6efe2;
 }
 
-/* 非表示 */
-#quizArea,#resultArea{
-    display:none;
-}
+/* 非表示エリア */
+#quizArea,#resultArea{display:none;}
 
 /* 注意事項 */
 .notice{
@@ -103,10 +102,12 @@ button{
 
 <div class="container">
 
-<!-- ★開始画面 -->
+<!-- ★開始画面（完全版） -->
 <div class="card" id="startArea">
 
-<h2>級を選択してください。</h2>
+<h2>試験概要</h2>
+
+<p>受検する級を選択してください。</p>
 
 <button onclick="start(5)">5級</button>
 <button onclick="start(4)">4級</button>
@@ -117,13 +118,14 @@ button{
 <div class="notice">
 ・外部検索や不正行為は禁止。<br>
 ・本人以外の代理受検は禁止。<br>
-・制限時間は180秒。<br>
-・合格資格の有効期間は6ヶ月。
+・試験時間は180秒。<br>
+・全問題は選択式。<br>
+・合格資格の有効期間は6ヶ月。<br>
 </div>
 
 </div>
 
-<!-- ★問題 -->
+<!-- ★問題画面 -->
 <div class="card" id="quizArea">
 
 <div style="display:flex;justify-content:space-between;">
@@ -134,25 +136,28 @@ button{
 <hr>
 
 <h2 id="question"></h2>
+
 <div id="choices"></div>
 
 <button onclick="back()">戻る</button>
 
 </div>
 
-<!-- ★結果 -->
+<!-- ★結果画面 -->
 <div class="card" id="resultArea">
 
 <h2>試験結果</h2>
 
-<h1 id="score"></h1>
-<div id="rank"></div>
-<p id="comment"></p>
+<h1 id="scoreText"></h1>
+
+<div id="rankText"></div>
+
+<p id="commentText"></p>
 
 <hr>
 
 <h3>認証コード</h3>
-<p id="code"></p>
+<p id="codeText"></p>
 
 </div>
 
@@ -160,13 +165,14 @@ button{
 
 <script>
 
+/* ★GAS URL（固定） */
 const GAS_URL="https://script.google.com/macros/s/AKfycbzHzS5MBedGsL3HXRpoeNewb8GKklGE7lgdj3dry9QeCImK1zZmqCgHIvc_5Cb4m_nC/exec";
 
-/* 問題 */
+/* ★問題（完全版） */
 const questions={
 5:[
 {q:"昆虫の足の本数は。",a:["6本","4本","8本","10本"],c:0},
-{q:"昆虫の体は頭胸腹の3部構造である。",a:["正しい","誤り","一部正しい","不明"],c:0},
+{q:"昆虫の体は頭胸腹の3部構造である。",a:["正しい","誤り","一部正しい","わからない"],c:0},
 {q:"外骨格の主成分は。",a:["キチン","カルシウム","鉄","脂質"],c:0},
 {q:"昆虫は節足動物である。",a:["正しい","誤り","一部正しい","不明"],c:0},
 {q:"昆虫の呼吸方法は。",a:["気管","肺","えら","皮膚"],c:0}
@@ -204,24 +210,17 @@ const questions={
 let level=5;
 let list=[];
 let i=0;
-let score=0;
 let answers=[];
 let timer;
 let endTime;
 
-/* 開始 */
+/* ★開始 */
 function start(l){
 
 level=l;
-list=questions[level].slice();
-
-for(let k=list.length-1;k>0;k--){
-let r=Math.floor(Math.random()*(k+1));
-[list[k],list[r]]=[list[r],list[k]];
-}
+list=questions[level];
 
 i=0;
-score=0;
 answers=[];
 
 document.getElementById("startArea").style.display="none";
@@ -232,14 +231,13 @@ endTime=Date.now()+180000;
 timer=setInterval(()=>{
 let t=Math.max(0,Math.floor((endTime-Date.now())/1000));
 document.getElementById("timer").innerText=t;
-
 if(t<=0)finish();
 },200);
 
 show();
 }
 
-/* 表示 */
+/* ★表示 */
 function show(){
 
 if(i>=list.length){
@@ -268,7 +266,7 @@ c.appendChild(b);
 });
 }
 
-/* 戻る */
+/* ★戻る */
 function back(){
 if(i>0){
 i--;
@@ -276,10 +274,12 @@ show();
 }
 }
 
-/* 終了 */
+/* ★終了 */
 function finish(){
 
 clearInterval(timer);
+
+let score=0;
 
 for(let j=0;j<list.length;j++){
 if(answers[j]===list[j].c)score++;
@@ -288,18 +288,25 @@ if(answers[j]===list[j].c)score++;
 let percent=Math.round(score/list.length*100);
 
 let rank="不合格";
-if(percent>=80)rank="合格";
+let comment="再受検してください";
+
+if(percent>=80){
+rank="合格";
+comment="基準を満たしています";
+}
 
 document.getElementById("quizArea").style.display="none";
 document.getElementById("resultArea").style.display="block";
 
-document.getElementById("score").innerText=percent+"点";
-document.getElementById("rank").innerText=rank;
+document.getElementById("scoreText").innerText=percent+"点";
+document.getElementById("rankText").innerText=rank;
+document.getElementById("commentText").innerText=comment;
 
+/* ★認証コード */
 let code="KS-"+Math.random().toString(36).substring(2,8).toUpperCase();
-document.getElementById("code").innerText=code;
+document.getElementById("codeText").innerText=code;
 
-/* GAS送信 */
+/* ★GAS送信（完全版） */
 fetch(GAS_URL,{
 method:"POST",
 body:JSON.stringify({

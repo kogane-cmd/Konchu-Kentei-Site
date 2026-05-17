@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>昆虫新聞 昆虫知識検定</title>
+<title>昆虫新聞|昆虫知識検定</title>
 
 <style>
 
@@ -262,13 +262,12 @@ header,
 <button onclick="startExam(1)">1級</button>
 
 <div class="notice">
-
+<br>
 ・外部検索は禁止。<br>
 ・本人以外の代理受検は禁止。<br>
 ・試験時間は180秒。<br>
 ・全問題選択式。<br>
 ・合格資格の有効期間は6ヶ月。<br>
-・認証コードは必ず保存してください。
 
 </div>
 
@@ -839,6 +838,8 @@ GAS_URL,
 
 method:"POST",
 
+mode:"no-cors",
+
 headers:{
 "Content-Type":
 "application/json"
@@ -857,10 +858,9 @@ date:new Date().toISOString()
 }
 
 )
-.then(response=>response.text())
-.then(data=>{
+.then(()=>{
 
-console.log(data);
+console.log("送信成功");
 
 })
 .catch(error=>{

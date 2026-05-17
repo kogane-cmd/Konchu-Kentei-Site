@@ -381,10 +381,10 @@ src="https://files.catbox.moe/8329h9.png"
 
 <div class="footer">
 
-この合格証書は昆虫知識検定において<br>
-正式に認定されたものです。<br><br>
-
-昆虫新聞
+<img
+class="handwrite"
+src="https://files.catbox.moe/8329h9.png"
+>
 
 </div>
 
@@ -607,6 +607,7 @@ let i=0;
 let score=0;
 let timer;
 let time=180;
+let endTime=0;
 
 /* ===== 認証コード ===== */
 
@@ -644,6 +645,9 @@ questions[level]
 
 i=0;
 score=0;
+
+endTime=Date.now\(\)+180000;
+
 time=180;
 
 document
@@ -662,7 +666,13 @@ showQuestion();
 
 timer=setInterval(()=>{
 
-time--;
+time=
+Math.max(
+0,
+Math.floor(
+(endTime-Date.now())/1000
+)
+);
 
 document
 .getElementById("timer")
@@ -856,7 +866,7 @@ console.log(data);
 })
 .catch(error=>{
 console.error(error);
-alert("GAS送信エラー");
+alert("GAS送信エラー：GASを再デプロイしてください");
 });
 
 }

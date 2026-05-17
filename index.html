@@ -7,88 +7,232 @@
 
 <style>
 
-/* ★全体フォント固定（絶対維持） */
+/* ===== 全体 ===== */
+
 *{
-    font-family:"Hiragino Mincho ProN","Yu Mincho","MS PMincho",serif !important;
+    box-sizing:border-box;
+    font-family:
+    "Hiragino Mincho ProN",
+    "Yu Mincho",
+    "MS PMincho",
+    serif;
 }
 
 body{
     margin:0;
-    background:linear-gradient(180deg,#edf7e8,#ffffff);
+    background:
+    linear-gradient(
+    180deg,
+    #edf7e8,
+    #ffffff
+    );
     color:#222;
 }
 
-/* ヘッダー */
+/* ===== ヘッダー ===== */
+
 header{
-    background:#2f5e2f;
+    background:#1f4d2a;
     color:white;
     text-align:center;
-    padding:28px;
+    padding:32px;
 }
 
 header h1{
     margin:0;
     font-size:2rem;
+    letter-spacing:3px;
 }
 
-/* コンテナ */
+/* ===== コンテナ ===== */
+
 .container{
-    max-width:900px;
+    max-width:950px;
     margin:auto;
     padding:25px;
 }
 
-/* カード */
+/* ===== カード ===== */
+
 .card{
     background:white;
     padding:25px;
-    border-radius:16px;
+    border-radius:18px;
     margin-bottom:20px;
-    box-shadow:0 4px 16px rgba(0,0,0,0.08);
+    box-shadow:
+    0 6px 20px
+    rgba(0,0,0,0.08);
 }
 
-/* ボタン（共通） */
+/* ===== ボタン ===== */
+
 button{
-    background:#2f5e2f;
+    background:#1f4d2a;
     color:white;
     border:none;
-    padding:12px 16px;
+    padding:12px 18px;
     border-radius:10px;
     cursor:pointer;
-    font-size:15px;
     margin-top:10px;
+    font-size:15px;
 }
 
-/* 選択肢ボタン */
+button:hover{
+    opacity:0.92;
+}
+
+/* ===== 選択肢 ===== */
+
 .choice{
     display:block;
     width:100%;
     text-align:left;
     background:#f3f7f1;
-    color:#222;
     border:1px solid #cfd8cf;
-    margin-top:8px;
+    margin-top:10px;
+    padding:12px;
+    font-size:15px;
 }
 
 .choice:hover{
-    background:#e6efe2;
+    background:#e6f1e1;
 }
 
-/* 非表示エリア */
-#quizArea,#resultArea{display:none;}
+/* ===== 非表示 ===== */
 
-/* 注意事項 */
+#quizArea,
+#resultArea{
+    display:none;
+}
+
+/* ===== 注意 ===== */
+
 .notice{
-    margin-top:10px;
-    font-size:0.9rem;
-    line-height:1.8;
-    border-left:4px solid #2f5e2f;
-    padding-left:10px;
+    margin-top:20px;
+    border-left:4px solid #1f4d2a;
+    padding-left:12px;
+    line-height:1.9;
+    font-size:0.95rem;
 }
 
-/* タイマー */
+/* ===== タイマー ===== */
+
 #timer{
     font-weight:bold;
+    font-size:18px;
+}
+
+/* ===== 合格証 ===== */
+
+#certificate{
+    display:none;
+    margin-top:30px;
+}
+
+/* ===== 証書本体 ===== */
+
+.cert{
+    max-width:780px;
+    margin:auto;
+    background:
+    linear-gradient(
+    180deg,
+    #fffdf8,
+    #f6efdb
+    );
+    border:10px double #1f4d2a;
+    padding:50px;
+    position:relative;
+    text-align:center;
+    box-shadow:
+    0 8px 24px
+    rgba(0,0,0,0.12);
+}
+
+/* 内側装飾 */
+
+.cert::before{
+    content:"";
+    position:absolute;
+    inset:12px;
+    border:
+    2px solid
+    rgba(31,77,42,0.2);
+    pointer-events:none;
+}
+
+/* タイトル */
+
+.cert-title{
+    font-size:38px;
+    color:#1f4d2a;
+    letter-spacing:8px;
+    margin-bottom:20px;
+    font-weight:bold;
+}
+
+/* 合格印 */
+
+.seal{
+    width:150px;
+    height:150px;
+    line-height:150px;
+    margin:25px auto;
+    border-radius:50%;
+    border:5px solid #1f4d2a;
+    color:#1f4d2a;
+    font-size:34px;
+    font-weight:bold;
+    transform:rotate(-10deg);
+    background:white;
+}
+
+/* 証書情報 */
+
+.cert-info{
+    margin-top:25px;
+    line-height:2.2;
+    font-size:18px;
+}
+
+/* フッター */
+
+.footer{
+    margin-top:35px;
+    font-size:13px;
+    color:#555;
+    line-height:1.8;
+}
+
+/* 印刷 */
+
+@media print{
+
+body{
+    background:white;
+}
+
+header,
+#startArea,
+#quizArea,
+#scoreText,
+#rankText,
+#commentText,
+#printButton,
+#codeTitle,
+#codeText{
+    display:none;
+}
+
+#certificate{
+    display:block !important;
+}
+
+.cert{
+    box-shadow:none;
+    border:8px double black;
+}
+
 }
 
 </style>
@@ -102,35 +246,46 @@ button{
 
 <div class="container">
 
-<!-- ★開始画面（完全版） -->
+<!-- ===== 開始画面 ===== -->
+
 <div class="card" id="startArea">
 
-<h2>試験概要</h2>
+<h2>受検級を選択してください</h2>
 
-<p>受検する級を選択してください。</p>
-
-<button onclick="start(5)">5級</button>
-<button onclick="start(4)">4級</button>
-<button onclick="start(3)">3級</button>
-<button onclick="start(2)">2級</button>
-<button onclick="start(1)">1級</button>
+<button onclick="startExam(5)">5級</button>
+<button onclick="startExam(4)">4級</button>
+<button onclick="startExam(3)">3級</button>
+<button onclick="startExam(2)">2級</button>
+<button onclick="startExam(1)">1級</button>
 
 <div class="notice">
-・外部検索や不正行為は禁止。<br>
+
+・外部検索は禁止。<br>
 ・本人以外の代理受検は禁止。<br>
 ・試験時間は180秒。<br>
-・全問題は選択式。<br>
+・全問題選択式。<br>
 ・合格資格の有効期間は6ヶ月。<br>
-</div>
+・認証コードは合格証の表示に必要です。<br>
+・必ず保存してください。
 
 </div>
 
-<!-- ★問題画面 -->
+</div>
+
+<!-- ===== 問題画面 ===== -->
+
 <div class="card" id="quizArea">
 
-<div style="display:flex;justify-content:space-between;">
+<div
+style="
+display:flex;
+justify-content:space-between;
+align-items:center;
+">
+
 <div id="progress"></div>
 <div id="timer">180</div>
+
 </div>
 
 <hr>
@@ -139,11 +294,12 @@ button{
 
 <div id="choices"></div>
 
-<button onclick="back()">戻る</button>
+<button onclick="goBack()">戻る</button>
 
 </div>
 
-<!-- ★結果画面 -->
+<!-- ===== 結果 ===== -->
+
 <div class="card" id="resultArea">
 
 <h2>試験結果</h2>
@@ -154,10 +310,71 @@ button{
 
 <p id="commentText"></p>
 
-<hr>
+<h3 id="codeTitle">認証コード</h3>
 
-<h3>認証コード</h3>
 <p id="codeText"></p>
+
+<button
+id="printButton"
+onclick="printCertificate()"
+>
+合格証を印刷
+</button>
+
+<!-- ===== 合格証 ===== -->
+
+<div id="certificate">
+
+<div class="cert">
+
+<div class="cert-title">
+
+合格証書
+
+</div>
+
+<div class="seal">
+
+合格
+
+</div>
+
+<div class="cert-info">
+
+<p>
+認証コード：
+<span id="cert_code"></span>
+</p>
+
+<p>
+受検級：
+<span id="cert_level"></span>級
+</p>
+
+<p>
+得点：
+<span id="cert_score"></span>点
+</p>
+
+<p>
+受検日時：
+<span id="cert_date"></span>
+</p>
+
+</div>
+
+<div class="footer">
+
+この合格証書は昆虫知識検定において<br>
+正式に認定されたものです。<br><br>
+
+昆虫新聞
+
+</div>
+
+</div>
+
+</div>
 
 </div>
 
@@ -165,157 +382,457 @@ button{
 
 <script>
 
-/* ★GAS URL（固定） */
-const GAS_URL="https://script.google.com/macros/s/AKfycbzHzS5MBedGsL3HXRpoeNewb8GKklGE7lgdj3dry9QeCImK1zZmqCgHIvc_5Cb4m_nC/exec";
+/* ===== GAS URL ===== */
 
-/* ★問題（完全版） */
+const GAS_URL=
+"https://script.google.com/macros/s/AKfycbxxm4xXdd_mLEATiIC4PgxM_NHwNQCB7Cjef0NYbsukulVUaZQMgqLLObemseIh/exec";
+
+/* ===== 問題 ===== */
+
 const questions={
+
 5:[
-{q:"昆虫の足の本数は。",a:["6本","4本","8本","10本"],c:0},
-{q:"昆虫の体は頭胸腹の3部構造である。",a:["正しい","誤り","一部正しい","わからない"],c:0},
-{q:"外骨格の主成分は。",a:["キチン","カルシウム","鉄","脂質"],c:0},
-{q:"昆虫は節足動物である。",a:["正しい","誤り","一部正しい","不明"],c:0},
-{q:"昆虫の呼吸方法は。",a:["気管","肺","えら","皮膚"],c:0}
+
+{
+q:"昆虫の足の本数は",
+a:["6本","4本","8本","10本"],
+c:0
+},
+
+{
+q:"昆虫の体の基本構造は",
+a:["頭胸腹","頭のみ","胸腹","頭脚腹"],
+c:0
+},
+
+{
+q:"昆虫の呼吸器官は",
+a:["気管","肺","えら","皮膚"],
+c:0
+},
+
+{
+q:"昆虫はどの分類に属するか",
+a:["節足動物","魚類","鳥類","哺乳類"],
+c:0
+},
+
+{
+q:"昆虫の外骨格の主成分は",
+a:["キチン","鉄","カルシウム","脂質"],
+c:0
+}
+
 ],
+
 4:[
-{q:"完全変態の順序は。",a:["卵幼虫蛹成虫","卵成虫","幼虫成虫蛹","卵蛹成虫"],c:0},
-{q:"昆虫の翅の位置は。",a:["胸部","頭部","腹部","脚"],c:0},
-{q:"昆虫の心臓の位置は。",a:["背側","腹側","頭部","脚"],c:0},
-{q:"昆虫の目は。",a:["複眼","単眼のみ","虹彩","網膜"],c:0},
-{q:"昆虫の体液の役割は。",a:["栄養運搬","骨形成","呼吸","光合成"],c:0}
+
+{
+q:"完全変態の順番は",
+a:[
+"卵→幼虫→蛹→成虫",
+"卵→成虫",
+"蛹→卵→成虫",
+"幼虫→卵→成虫"
 ],
+c:0
+},
+
+{
+q:"昆虫の翅が付く場所は",
+a:["胸部","腹部","頭部","脚"],
+c:0
+},
+
+{
+q:"昆虫の目の名称は",
+a:["複眼","単眼","虹彩","網膜"],
+c:0
+},
+
+{
+q:"昆虫の脱皮の目的は",
+a:["成長","飛行","産卵","休眠"],
+c:0
+},
+
+{
+q:"昆虫の血液の色は",
+a:["無色系","赤","青","黒"],
+c:0
+}
+
+],
+
 3:[
-{q:"マメコガネの学名は。",a:["Popillia japonica","Anomala albopilosa","Gryllus bimaculatus","Oxya yezoensis"],c:0},
-{q:"昆虫の血液の色は。",a:["無色〜緑系","赤","青","黒"],c:0},
-{q:"昆虫の神経系は。",a:["腹側神経索","背側神経索","脊髄","神経なし"],c:0},
-{q:"昆虫の翅は基本何対か。",a:["二対","一対","三対","四対"],c:0},
-{q:"昆虫の成長は。",a:["脱皮","分裂","発芽","光合成"],c:0}
+
+{
+q:"マメコガネの学名は",
+a:[
+"Popillia japonica",
+"Anomala",
+"Gryllus",
+"Oxya"
 ],
+c:0
+},
+
+{
+q:"昆虫の神経系は",
+a:[
+"腹側神経索",
+"背側神経索",
+"脊髄",
+"神経なし"
+],
+c:0
+},
+
+{
+q:"昆虫の翅の枚数は基本何対か",
+a:["二対","一対","三対","四対"],
+c:0
+},
+
+{
+q:"昆虫の成長方法は",
+a:["脱皮","分裂","発芽","光合成"],
+c:0
+},
+
+{
+q:"昆虫の心臓の位置は",
+a:["背側","腹側","脚","頭部"],
+c:0
+}
+
+],
+
 2:[
-{q:"ヤマトアオドウガネの属は。",a:["Anomala","Popillia","Trypoxylus","Goliathus"],c:0},
-{q:"コガネムシの活動時期は。",a:["夏","冬","秋","春"],c:0},
-{q:"昆虫に含まれないものは。",a:["種子","蛹","幼虫","卵"],c:0},
-{q:"昆虫の脚の付け根は。",a:["基節","胸節","腹節","頭節"],c:0},
-{q:"昆虫の感覚器でないものは。",a:["肺","触角","複眼","感覚毛"],c:0}
+
+{
+q:"ヤマトアオドウガネの属は",
+a:[
+"Anomala",
+"Popillia",
+"Goliathus",
+"Trypoxylus"
 ],
+c:0
+},
+
+{
+q:"昆虫に含まれないものは",
+a:["種子","蛹","幼虫","卵"],
+c:0
+},
+
+{
+q:"昆虫の感覚器ではないものは",
+a:["肺","触角","複眼","感覚毛"],
+c:0
+},
+
+{
+q:"昆虫の脚の付け根は",
+a:["基節","腹節","頭節","胸節"],
+c:0
+},
+
+{
+q:"昆虫の分類は",
+a:["節足動物","魚類","鳥類","両生類"],
+c:0
+}
+
+],
+
 1:[
-{q:"昆虫の分類は。",a:["節足動物","魚類","鳥類","哺乳類"],c:0},
-{q:"昆虫の足の本数は。",a:["6本","4本","8本","10本"],c:0},
-{q:"昆虫の体構造は。",a:["頭胸腹","頭のみ","胴体のみ","頭脚腹"],c:0},
-{q:"昆虫に骨はあるか。",a:["ない外骨格","ある","一部ある","種類による"],c:0},
-{q:"昆虫の目は。",a:["複眼","単眼のみ","なし","耳"],c:0}
+
+{
+q:"昆虫の基本構造は",
+a:["頭胸腹","頭腹","胸腹","頭脚腹"],
+c:0
+},
+
+{
+q:"昆虫の足の数は",
+a:["6本","8本","10本","4本"],
+c:0
+},
+
+{
+q:"昆虫に骨はあるか",
+a:["ない","ある","一部ある","種類による"],
+c:0
+},
+
+{
+q:"昆虫の呼吸器官は",
+a:["気管","肺","えら","皮膚"],
+c:0
+},
+
+{
+q:"昆虫はどの分類か",
+a:["節足動物","魚類","鳥類","哺乳類"],
+c:0
+}
+
 ]
+
 };
+
+/* ===== 状態 ===== */
 
 let level=5;
 let list=[];
 let i=0;
-let answers=[];
+let score=0;
 let timer;
-let endTime;
+let time=180;
 
-/* ★開始 */
-function start(l){
+/* ===== 認証コード ===== */
+
+function makeCode(){
+
+const chars=
+"ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+let code="";
+
+for(let i=0;i<6;i++){
+
+code+=
+chars[
+Math.floor(
+Math.random()*chars.length
+)
+];
+
+}
+
+return "KS-"+code;
+
+}
+
+/* ===== 開始 ===== */
+
+function startExam(l){
 
 level=l;
-list=questions[level];
+
+list=
+questions[level]
+.sort(()=>Math.random()-0.5);
 
 i=0;
-answers=[];
+score=0;
+time=180;
 
-document.getElementById("startArea").style.display="none";
-document.getElementById("quizArea").style.display="block";
+document
+.getElementById("timer")
+.innerText=time;
 
-endTime=Date.now()+180000;
+document
+.getElementById("startArea")
+.style.display="none";
+
+document
+.getElementById("quizArea")
+.style.display="block";
+
+showQuestion();
 
 timer=setInterval(()=>{
-let t=Math.max(0,Math.floor((endTime-Date.now())/1000));
-document.getElementById("timer").innerText=t;
-if(t<=0)finish();
-},200);
 
-show();
+time--;
+
+document
+.getElementById("timer")
+.innerText=time;
+
+if(time<=0){
+finishExam();
 }
 
-/* ★表示 */
-function show(){
+},1000);
+
+}
+
+/* ===== 問題表示 ===== */
+
+function showQuestion(){
 
 if(i>=list.length){
-finish();
+
+finishExam();
+
 return;
+
 }
 
-let q=list[i];
+const q=list[i];
 
-document.getElementById("progress").innerText=(i+1)+"/"+list.length;
-document.getElementById("question").innerText=q.q;
+document
+.getElementById("progress")
+.innerText=
+(i+1)+"/"+list.length;
 
-let c=document.getElementById("choices");
-c.innerHTML="";
+document
+.getElementById("question")
+.innerText=q.q;
+
+const choices=
+document.getElementById("choices");
+
+choices.innerHTML="";
 
 q.a.forEach((v,idx)=>{
-let b=document.createElement("button");
+
+const b=
+document.createElement("button");
+
 b.className="choice";
+
 b.innerText=v;
+
 b.onclick=()=>{
-answers[i]=idx;
+
+if(idx===q.c){
+score++;
+}
+
 i++;
-show();
+
+showQuestion();
+
 };
-c.appendChild(b);
+
+choices.appendChild(b);
+
 });
+
 }
 
-/* ★戻る */
-function back(){
+/* ===== 戻る ===== */
+
+function goBack(){
+
 if(i>0){
+
 i--;
-show();
-}
+
+showQuestion();
+
 }
 
-/* ★終了 */
-function finish(){
+}
+
+/* ===== 印刷 ===== */
+
+function printCertificate(){
+
+window.print();
+
+}
+
+/* ===== 終了 ===== */
+
+function finishExam(){
 
 clearInterval(timer);
 
-let score=0;
+const percent=
+Math.round(
+score/list.length*100
+);
 
-for(let j=0;j<list.length;j++){
-if(answers[j]===list[j].c)score++;
-}
+document
+.getElementById("quizArea")
+.style.display="none";
 
-let percent=Math.round(score/list.length*100);
+document
+.getElementById("resultArea")
+.style.display="block";
 
 let rank="不合格";
-let comment="再受検してください";
+
+let comment=
+"再受検してください";
 
 if(percent>=80){
+
 rank="合格";
-comment="基準を満たしています";
+
+comment=
+"基準を満たしています";
+
+document
+.getElementById("certificate")
+.style.display="block";
+
 }
 
-document.getElementById("quizArea").style.display="none";
-document.getElementById("resultArea").style.display="block";
+document
+.getElementById("scoreText")
+.innerText=percent+"点";
 
-document.getElementById("scoreText").innerText=percent+"点";
-document.getElementById("rankText").innerText=rank;
-document.getElementById("commentText").innerText=comment;
+document
+.getElementById("rankText")
+.innerText=rank;
 
-/* ★認証コード */
-let code="KS-"+Math.random().toString(36).substring(2,8).toUpperCase();
-document.getElementById("codeText").innerText=code;
+document
+.getElementById("commentText")
+.innerText=comment;
 
-/* ★GAS送信（完全版） */
+/* ===== 認証コード ===== */
+
+const code=makeCode();
+
+document
+.getElementById("codeText")
+.innerText=code;
+
+/* ===== 合格証 ===== */
+
+document
+.getElementById("cert_code")
+.innerText=code;
+
+document
+.getElementById("cert_level")
+.innerText=level;
+
+document
+.getElementById("cert_score")
+.innerText=percent;
+
+document
+.getElementById("cert_date")
+.innerText=
+new Date().toLocaleString();
+
+/* ===== GAS送信 ===== */
+
 fetch(GAS_URL,{
+
 method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
 body:JSON.stringify({
+
 code:code,
 level:level,
 score:percent,
 result:rank,
 date:new Date().toISOString()
+
 })
+
 });
 
 }

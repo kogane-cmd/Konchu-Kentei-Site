@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -87,7 +88,8 @@ button:hover{
     display:block;
     width:100%;
     text-align:left;
-    background:#f3f7f1;
+    background:#edf5ea;
+    color:#222;
     border:1px solid #cfd8cf;
     margin-top:10px;
     padding:12px;
@@ -95,7 +97,7 @@ button:hover{
 }
 
 .choice:hover{
-    background:#e6f1e1;
+    background:#dfeeda;
 }
 
 /* ===== 非表示 ===== */
@@ -169,6 +171,15 @@ button:hover{
     letter-spacing:8px;
     margin-bottom:20px;
     font-weight:bold;
+}
+
+/* 手書き画像 */
+
+.handwrite{
+    width:100%;
+    max-width:500px;
+    margin:0 auto 25px auto;
+    display:block;
 }
 
 /* 合格印 */
@@ -326,6 +337,11 @@ onclick="printCertificate()"
 <div id="certificate">
 
 <div class="cert">
+
+<img
+class="handwrite"
+src="https://files.catbox.moe/8329h9.png"
+>
 
 <div class="cert-title">
 
@@ -833,6 +849,14 @@ date:new Date().toISOString()
 
 })
 
+})
+.then(response=>response.text())
+.then(data=>{
+console.log(data);
+})
+.catch(error=>{
+console.error(error);
+alert("GAS送信エラー");
 });
 
 }
@@ -841,3 +865,4 @@ date:new Date().toISOString()
 
 </body>
 </html>
+```

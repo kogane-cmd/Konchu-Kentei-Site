@@ -3,46 +3,55 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>昆虫知識検定</title>
+<title>昆虫新聞 昆虫知識検定</title>
 
 <style>
 
 body{
     margin:0;
-    background:#fff;
-    font-family:"Yu Mincho","Hiragino Mincho ProN",serif;
-    color:#111;
+    padding:0;
+    background:linear-gradient(180deg,#edf7e8,#ffffff);
+    color:#222;
+
+    font-family:
+    "Hiragino Mincho ProN",
+    "Yu Mincho",
+    "MS PMincho",
+    serif;
+
     user-select:none;
 }
 
 header{
-    background:#1f3a1f;
-    color:#fff;
-    padding:20px;
+    background:#2f5e2f;
+    color:white;
+    padding:30px;
     text-align:center;
 }
 
 .container{
-    max-width:800px;
+    max-width:900px;
     margin:auto;
-    padding:20px;
+    padding:25px;
 }
 
 .card{
-    border:1px solid #ddd;
-    border-radius:10px;
-    padding:20px;
-    margin-bottom:15px;
+    background:white;
+    border-radius:18px;
+    padding:25px;
+    margin-bottom:20px;
+    box-shadow:0 5px 18px rgba(0,0,0,0.08);
 }
 
 button{
-    padding:10px 14px;
+    background:#2f5e2f;
+    color:white;
     border:none;
-    background:#1f3a1f;
-    color:#fff;
+    border-radius:10px;
+    padding:12px 18px;
     cursor:pointer;
-    border-radius:6px;
-    margin:5px 0;
+    font-size:1rem;
+    margin-top:10px;
 }
 
 button:hover{
@@ -52,27 +61,34 @@ button:hover{
 .choice{
     display:block;
     width:100%;
-    margin:8px 0;
-    padding:10px;
-    background:#f5f5f5;
-    border:1px solid #ccc;
-    color:#111;
-    cursor:pointer;
     text-align:left;
+    background:#edf5ea;
+    color:#222;
+    margin-top:8px;
 }
 
 .choice:hover{
-    background:#e6e6e6;
+    background:#dfeeda;
 }
 
-#quizArea,#resultArea{display:none;}
+#quizArea,#resultArea{
+    display:none;
+}
 
-#topBar{
-    display:flex;
-    justify-content:space-between;
+#timer{
     font-weight:bold;
-    margin-bottom:10px;
 }
+
+.badge{
+    display:inline-block;
+    background:#dff0d8;
+    padding:10px 16px;
+    border-radius:999px;
+    margin-top:10px;
+    font-weight:bold;
+}
+
+.small{font-size:0.9rem;color:#666;}
 
 </style>
 </head>
@@ -80,36 +96,34 @@ button:hover{
 <body>
 
 <header>
-<h1>昆虫知識検定</h1>
+<h1>昆虫新聞 昆虫知識検定</h1>
 </header>
 
 <div class="container">
 
 <!-- 級選択 -->
-<div class="card" id="selectArea">
+<div class="card" id="startArea">
 
-<h2>受検級を選択</h2>
+<h2>級を選択</h2>
 
-<p>
-・制限時間180秒<br>
-・外部検索禁止<br>
-・不正行為禁止
+<button onclick="selectLevel(5)">5級</button>
+<button onclick="selectLevel(4)">4級</button>
+<button onclick="selectLevel(3)">3級</button>
+<button onclick="selectLevel(2)">2級</button>
+<button onclick="selectLevel(1)">1級</button>
+
+<p class="small">
+※外部検索等不正行為は禁止
 </p>
-
-<button onclick="startExam(5)">5級</button>
-<button onclick="startExam(4)">4級</button>
-<button onclick="startExam(3)">3級</button>
-<button onclick="startExam(2)">2級</button>
-<button onclick="startExam(1)">1級</button>
 
 </div>
 
-<!-- 試験 -->
+<!-- 問題 -->
 <div class="card" id="quizArea">
 
-<div id="topBar">
+<div style="display:flex;justify-content:space-between;">
 <div id="progress"></div>
-<div id="timer"></div>
+<div id="timer">残り時間: 180</div>
 </div>
 
 <hr>
@@ -117,7 +131,7 @@ button:hover{
 <h2 id="question"></h2>
 <div id="choices"></div>
 
-<button onclick="backQuestion()">戻る</button>
+<button onclick="goBack()">前の問題へ戻る</button>
 
 </div>
 
@@ -126,13 +140,18 @@ button:hover{
 
 <h2>結果</h2>
 
-<h1 id="resultText"></h1>
+<h1 id="scoreText"></h1>
 
-<p id="detailText"></p>
+<div class="badge" id="rankText"></div>
 
-<p id="timeText"></p>
+<p id="commentText"></p>
 
-<button onclick="location.reload()">終了</button>
+<hr>
+
+<h3>認証番号</h3>
+<p id="certificate"></p>
+
+<button onclick="location.reload()">トップへ戻る</button>
 
 </div>
 
@@ -140,149 +159,173 @@ button:hover{
 
 <script>
 
+// -------------------- 問題データ（仮） --------------------
 const questionBank = {
-
 5:[
-{q:"昆虫の足の本数は？",a:["4本","6本","8本","10本"],c:1},
-{q:"カブトムシの主な食べ物は？",a:["樹液","草","水","石"],c:0},
-{q:"昆虫の体構造は？",a:["頭・胸・腹","頭・胴・脚","胸・腹・羽","頭・尻"],c:0},
-{q:"チョウの幼虫は？",a:["イモムシ","ミミズ","ヤゴ","カエル"],c:0},
-{q:"バッタが多い季節は？",a:["冬","春〜秋","真冬","雪"],c:1}
+{q:"昆虫の体は大きくいくつに分かれる？",a:["2","3","4","5"],c:1},
+{q:"バッタの後ろ脚の役割は？",a:["飛ぶ","食べる","歩く","鳴く"],c:0},
+{q:"昆虫の呼吸器官は？",a:["肺","えら","気管","皮膚"],c:2},
+{q:"カブトムシの活動時間は？",a:["昼","夜","朝","常時"],c:1},
+{q:"昆虫の足の本数は？",a:["4","6","8","10"],c:1}
 ],
 
 4:[
-{q:"昆虫の羽は多くの場合何枚？",a:["2枚","4枚","6枚","8枚"],c:1},
-{q:"セミの幼虫の生活場所は？",a:["水中","土中","空中","花"],c:1},
-{q:"昆虫の呼吸器官は？",a:["肺","気門","腸","皮膚"],c:1},
-{q:"カマキリの特徴は？",a:["草食","捕食性","水生","寄生"],c:1},
-{q:"昆虫の分類は？",a:["節足動物","軟体動物","脊椎動物","環形動物"],c:0}
-]
+{q:"コガネムシの仲間はどれ？",a:["カブトムシ","クモ","ムカデ","ミミズ"],c:0},
+{q:"完全変態とは？",a:["卵→幼虫→蛹→成虫","卵→成虫","卵→幼虫→成虫","蛹なし"],c:0},
+{q:"昆虫の体表は？",a:["骨","外骨格","皮膚","筋肉"],c:1},
+{q:"セミはどこで鳴く？",a:["空","木","土中","水中"],c:1},
+{q:"昆虫の目の特徴は？",a:["単眼のみ","複眼","無い","耳がある"],c:1}
+],
 
+3:[
+{q:"マメコガネの学名は？",a:["Popillia japonica","Anomala daimiana","Oxya yezoensis","Gryllus"],c:0},
+{q:"昆虫の分類は？",a:["脊椎動物","無脊椎動物","魚類","鳥類"],c:1},
+{q:"昆虫の触角の役割は？",a:["飛行","感覚","食事","呼吸"],c:1},
+{q:"カブトムシの幼虫は何を食べる？",a:["肉","腐葉土","葉","花"],c:1},
+{q:"昆虫の心臓の位置は？",a:["腹部","頭","脚","羽"],c:0}
+],
+
+2:[
+{q:"ヤマトアオドウガネの属は？",a:["Anomala","Popillia","Trypoxylus","Goliathus"],c:0},
+{q:"昆虫の翅は何対？",a:["1","2","3","4"],c:1},
+{q:"昆虫の視覚器官は？",a:["目","耳","鼻","肺"],c:0},
+{q:"カブトムシの寿命は？",a:["数日","数ヶ月","数年","10年"],c:1},
+{q:"昆虫の脚の関節は？",a:["外骨格","内骨格","軟骨","筋肉"],c:0}
+],
+
+1:[
+{q:"昆虫の基本分類は？",a:["節足動物","軟体動物","脊椎動物","魚類"],c:0},
+{q:"昆虫の体節は？",a:["頭・胸・腹","頭・脚・羽","胸・腹・尾","頭・尾・脚"],c:0},
+{q:"昆虫の羽の役割は？",a:["移動","食事","防御","呼吸"],c:0},
+{q:"昆虫の外骨格の役割は？",a:["保護","消化","呼吸","視覚"],c:0},
+{q:"昆虫の幼虫は？",a:["成長段階","成虫","卵","蛹のみ"],c:0}
+]
 };
 
+// -------------------- 状態 --------------------
 let level = 5;
 let questions = [];
 let current = 0;
-let userAnswers = [];
-let endTime;
+let score = 0;
+let time = 180;
 let timer;
 
-function startExam(lv){
+// -------------------- 認証番号生成 --------------------
+const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
-console.log("startExam called:", lv); // デバッグ用
-
-level = lv;
-questions = [...questionBank[lv]];
-
-if(!questions || questions.length === 0){
-    alert("この級の問題が設定されていません");
-    return;
+function randomString(len){
+let r="";
+for(let i=0;i<len;i++){
+r += chars[Math.floor(Math.random()*chars.length)];
+}
+return r;
 }
 
-questions.sort(()=>Math.random()-0.5);
+function checkCode(base){
+let s=0;
+for(let i=0;i<base.length;i++){
+s += base.charCodeAt(i);
+}
+return chars[s % chars.length] + chars[(s*7)%chars.length];
+}
 
-current = 0;
-userAnswers = [];
+function generateCode(){
+let base = randomString(6);
+return "KS-" + base + "-" + checkCode(base);
+}
 
-document.getElementById("selectArea").style.display="none";
+// -------------------- 開始 --------------------
+function selectLevel(l){
+level = l;
+questions = questionBank[level].sort(()=>Math.random()-0.5);
+
+document.getElementById("startArea").style.display="none";
 document.getElementById("quizArea").style.display="block";
 
-endTime = Date.now() + 180000;
+startQuiz();
+}
 
-updateTimer();
-timer = setInterval(updateTimer,200);
+function startQuiz(){
+
+current=0;
+score=0;
+time=180;
 
 showQuestion();
 
-}
+timer = setInterval(()=>{
+time--;
+document.getElementById("timer").innerText="残り時間: "+time;
 
-function updateTimer(){
-
-let remaining = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
-
-document.getElementById("timer").innerText =
-"残り時間: " + remaining;
-
-if(remaining <= 0){
-    finishExam();
-}
+if(time<=0) finishQuiz();
+},1000);
 
 }
 
+// -------------------- 問題表示 --------------------
 function showQuestion(){
 
-if(current >= questions.length){
-    finishExam();
-    return;
+if(current>=questions.length){
+finishQuiz();
+return;
 }
 
 let q = questions[current];
 
 document.getElementById("progress").innerText =
-(current+1) + "/" + questions.length;
+`問題 ${current+1}/${questions.length}`;
 
 document.getElementById("question").innerText = q.q;
 
-let area = document.getElementById("choices");
-area.innerHTML = "";
+let c = document.getElementById("choices");
+c.innerHTML="";
 
-q.a.forEach((t,i)=>{
-
-let b = document.createElement("button");
-b.className = "choice";
-b.innerText = t;
-
-b.onclick = ()=>{
-
-userAnswers[current] = i;
+q.a.forEach((v,i)=>{
+let b=document.createElement("button");
+b.className="choice";
+b.innerText=v;
+b.onclick=()=>{
+if(i===q.c) score++;
 current++;
 showQuestion();
-
 };
-
-area.appendChild(b);
-
+c.appendChild(b);
 });
 
 }
 
-function backQuestion(){
-
-if(current > 0){
-    current--;
-    showQuestion();
+// -------------------- 戻る --------------------
+function goBack(){
+if(current>0){
+current--;
+showQuestion();
+}
 }
 
-}
-
-function finishExam(){
+// -------------------- 終了 --------------------
+function finishQuiz(){
 
 clearInterval(timer);
 
-let correct = 0;
-
-for(let i=0;i<questions.length;i++){
-if(userAnswers[i] === questions[i].c){
-correct++;
-}
-}
+let percent = Math.round((score/questions.length)*100);
 
 document.getElementById("quizArea").style.display="none";
 document.getElementById("resultArea").style.display="block";
 
-let passLine = (level === 1) ? 5 : 3;
-let pass = correct >= passLine;
+document.getElementById("scoreText").innerText=percent+"点";
 
-document.getElementById("resultText").innerText =
-pass ? "合格" : "不合格";
+let rank="不合格";
+let comment="再受検してください";
 
-document.getElementById("detailText").innerText =
-"正答数: " + correct + "/" + questions.length;
+if(percent>=80){
+rank="合格";
+comment="十分な知識が確認されました";
+}
 
-let used = Math.floor((180000 - (endTime - Date.now())) / 1000);
+document.getElementById("rankText").innerText=rank;
+document.getElementById("commentText").innerText=comment;
 
-document.getElementById("timeText").innerText =
-"経過時間: " + used + "秒";
+document.getElementById("certificate").innerText = generateCode();
 
 }
 
